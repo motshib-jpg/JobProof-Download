@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0B2740">
+<title>JobProof Server Proof Verification</title>
+<style>
+:root{--n:#0B2740;--n2:#123A55;--t:#0B8F7A;--g:#F4A340;--bg:#F4F8F7;--i:#17232D;--m:#647782;--bad:#B54747}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Tahoma,Arial,sans-serif;background:linear-gradient(180deg,#eef7f4,#fff 45%);color:var(--i);min-height:100vh}.w{max-width:850px;margin:auto;padding:25px 16px 55px}.hero{background:linear-gradient(135deg,var(--n),var(--n2),#0b695f);color:white;border-radius:28px;padding:25px;box-shadow:0 18px 55px #0b274025}.brand{font-size:28px;font-weight:900}.sub{opacity:.8;margin-top:6px}.badge{display:inline-flex;margin-top:15px;padding:8px 12px;border-radius:999px;background:#ffffff17;border:1px solid #ffffff2b;font-weight:850}.card{background:white;border:1px solid #dfe9e6;border-radius:23px;padding:19px;margin-top:16px;box-shadow:0 12px 34px #0b27400d}.title{font-size:18px;font-weight:900;color:var(--n);margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.item{background:var(--bg);border-radius:15px;padding:12px}.label{font-size:12px;color:var(--m);font-weight:700}.value{font-weight:800;margin-top:4px;word-break:break-word}.proof{font-family:Consolas,monospace}.good{color:var(--t)}.warn{color:#aa6c10}.bad{color:var(--bad)}.hidden{display:none}.note{font-size:13px;line-height:1.6;color:var(--m)}button{border:0;border-radius:13px;padding:10px 14px;background:var(--t);color:#fff;font:inherit;font-weight:850;cursor:pointer}@media(max-width:620px){.grid{grid-template-columns:1fr}.brand{font-size:23px}}
+</style></head>
+<body><main class="w">
+<section class="hero"><div class="brand">JobProof • Server Proof Registry</div><div class="sub">Authoritative proof anchoring • سجل إثبات مركزي</div><div class="badge" id="badge">Checking registry…</div></section>
+<section class="card"><div class="title" id="statusTitle">Verifying…</div><div class="note" id="statusText">The public proof ID is being checked against the JobProof server registry.</div></section>
+<div id="content" class="hidden">
+<section class="card"><div class="title">Issuer • الجهة</div><div class="grid">
+<div class="item"><div class="label">Organization • المنشأة</div><div class="value" id="org"></div></div>
+<div class="item"><div class="label">Country • الدولة</div><div class="value" id="country"></div></div>
+<div class="item"><div class="label">Registration • السجل/الترخيص</div><div class="value" id="registration"></div></div>
+<div class="item"><div class="label">Published • النشر</div><div class="value" id="published"></div></div>
+</div></section>
+<section class="card"><div class="title">Proof • الإثبات</div><div class="grid">
+<div class="item"><div class="label">Job ID • رقم العمل</div><div class="value" id="job"></div></div>
+<div class="item"><div class="label">Version • الإصدار</div><div class="value" id="version"></div></div>
+<div class="item"><div class="label">Registry status • حالة السجل</div><div class="value" id="registryStatus"></div></div>
+<div class="item"><div class="label">Proof state • حالة البصمة</div><div class="value" id="proofState"></div></div>
+<div class="item"><div class="label">Evidence count • عدد الصور</div><div class="value" id="evidence"></div></div>
+<div class="item"><div class="label">Device key • مفتاح الجهاز</div><div class="value proof" id="device"></div></div>
+<div class="item"><div class="label">Signer • الموقّع</div><div class="value" id="signer"></div></div>
+<div class="item"><div class="label">Signed at • وقت التوقيع</div><div class="value" id="signed"></div></div>
+</div>
+<div class="item" style="margin-top:10px"><div class="label">Proof fingerprint • بصمة الإثبات</div><div class="value proof" id="fingerprint"></div></div>
+<div class="item" style="margin-top:10px"><div class="label">Client seal • ختم العميل</div><div class="value proof" id="seal"></div></div>
+</section>
+<section class="card hidden" id="newerCard"><div class="title warn">A newer proof version exists • يوجد إصدار أحدث</div><div class="note">This record is valid as a historical version, but it is no longer the current server record.</div><button id="openCurrent">Open current version • فتح الإصدار الحالي</button></section>
+<section class="card"><div class="title">Trust model • نموذج الثقة</div><p class="note">This page confirms that the displayed fingerprint version was anchored by an authenticated JobProof organization account and linked to the registered device-key identifier shown above. A revoked record is explicitly marked. This is stronger than a self-contained QR snapshot, but it is not government or licensing-registry verification unless an external identity-verification service is connected.</p></section>
+</div>
+</main>
+<script>
+const EDGE="https://flpcqnzlousongduztdq.supabase.co/functions/v1/jobproof-public";const $=id=>document.getElementById(id);const val=(id,v)=>$(id).textContent=(v===undefined||v===null||v==="")?"—":String(v);const id=new URLSearchParams(location.hash.replace(/^#/,"")).get("id")||"";
+function fail(m){$("statusTitle").textContent="Proof not verified";$("statusTitle").className="title bad";$("statusText").textContent=m;$("badge").textContent="NOT VERIFIED"}
+(async()=>{if(!/^[0-9a-f-]{36}$/i.test(id))return fail("Invalid proof ID.");try{const r=await fetch(EDGE,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"proof",public_id:id})});const d=await r.json();if(!r.ok)throw new Error(d.error||`HTTP ${r.status}`);const p=d.proof||{},o=d.issuer||{};$("content").classList.remove("hidden");val("org",o.name);val("country",o.country);val("registration",o.registration_id);val("published",p.published_at?new Date(p.published_at).toLocaleString():"—");val("job",p.local_job_id);val("version",p.version);val("registryStatus",p.status);val("proofState",p.proof_state);val("evidence",p.evidence_count);val("device",p.device_key_id);val("signer",p.signer_name);val("signed",p.signed_at?new Date(Number(p.signed_at)).toLocaleString():"—");val("fingerprint",p.proof_fingerprint);val("seal",p.sealed_fingerprint);
+let label="SERVER ANCHORED";let cls="good";if(p.status==="revoked"){label="REVOKED";cls="bad"}else if(p.status==="superseded"){label="VALID HISTORICAL VERSION";cls="warn"}$("badge").textContent=label;$("statusTitle").textContent=label;$("statusTitle").className=`title ${cls}`;$("statusText").textContent=p.status==="current"?"This is the current authoritative JobProof registry version.":p.status==="revoked"?"This proof record has been revoked.": "This is a historical anchored version; a newer version exists.";
+if(d.current&&d.current.public_id&&d.current.public_id!==p.public_id){$("newerCard").classList.remove("hidden");$("openCurrent").onclick=()=>{location.hash=`id=${d.current.public_id}`;location.reload()}}}catch(e){fail(e.message)}})();
+</script></body></html>
