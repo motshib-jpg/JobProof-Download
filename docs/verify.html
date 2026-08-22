@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0B2740">
+<title>JobProof Verification | التحقق من إثبات العمل</title>
+<style>
+:root{--navy:#0B2740;--navy2:#123A55;--teal:#0B8F7A;--gold:#F4A340;--bg:#F4F8F7;--ink:#17232D;--muted:#647782;--bad:#B54747}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Tahoma,Arial,sans-serif;background:radial-gradient(circle at top right,#dff5ef 0,transparent 35%),linear-gradient(180deg,#eef7f4,#fff 44%);color:var(--ink);min-height:100vh}
+.wrap{max-width:820px;margin:auto;padding:28px 18px 50px}.hero{background:linear-gradient(135deg,var(--navy),var(--navy2));color:white;border-radius:28px;padding:26px;box-shadow:0 18px 55px #0b274026}.brand{font-weight:900;font-size:28px}.arabic{font-family:Tahoma,Arial,sans-serif}.sub{opacity:.78;margin-top:5px}.badge{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:10px 14px;border-radius:999px;font-weight:800;background:#ffffff16;border:1px solid #ffffff2c}.dot{width:10px;height:10px;border-radius:50%;background:var(--gold)}.card{background:white;border:1px solid #dfe9e6;border-radius:24px;padding:22px;margin-top:18px;box-shadow:0 14px 36px #0b27400d}.result{font-size:22px;font-weight:900;margin:0 0 7px}.ok{color:var(--teal)}.warn{color:#b37416}.bad{color:var(--bad)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}.item{background:var(--bg);border-radius:15px;padding:13px}.label{font-size:12px;color:var(--muted);font-weight:700}.value{font-weight:800;margin-top:5px;word-break:break-word}.finger{font-family:Consolas,monospace;letter-spacing:.5px}.note{font-size:13px;color:var(--muted);line-height:1.6}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.btn{display:inline-block;text-decoration:none;border-radius:14px;padding:11px 15px;font-weight:800}.primary{background:var(--teal);color:white}.secondary{background:#eef6f4;color:var(--navy)}.hidden{display:none}@media(max-width:600px){.grid{grid-template-columns:1fr}.brand{font-size:23px}.hero{padding:21px;border-radius:22px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<section class="hero">
+  <div class="brand">JobProof <span style="opacity:.55">•</span> <span class="arabic">إثبات العمل</span></div>
+  <div class="sub">Independent QR verification • تحقق رقمي من التقرير</div>
+  <div class="badge"><span class="dot" id="dot"></span><span id="badgeText">Checking verification data…</span></div>
+</section>
+<section class="card" id="resultCard">
+  <h1 class="result" id="result">Verifying…</h1>
+  <p id="summary" class="note">The QR data is being checked in your browser.</p>
+  <div class="grid hidden" id="grid">
+    <div class="item"><div class="label">Job ID • رقم العمل</div><div class="value" id="jobId"></div></div>
+    <div class="item"><div class="label">Client approval • اعتماد العميل</div><div class="value" id="sealState"></div></div>
+    <div class="item"><div class="label">Sealed fingerprint • بصمة الاعتماد</div><div class="value finger" id="seal"></div></div>
+    <div class="item"><div class="label">Current fingerprint • البصمة الحالية</div><div class="value finger" id="current"></div></div>
+    <div class="item"><div class="label">Signed by • الموقّع</div><div class="value" id="signer"></div></div>
+    <div class="item"><div class="label">Signed at • وقت التوقيع</div><div class="value" id="signedAt"></div></div>
+    <div class="item"><div class="label">Evidence photos • صور الإثبات</div><div class="value" id="photos"></div></div>
+    <div class="item"><div class="label">Device key ID • معرف مفتاح الجهاز</div><div class="value finger" id="keyId"></div></div>
+  </div>
+  <div class="actions"><a class="btn primary" href="https://github.com/motshib-jpg/JobProof-Download/releases/latest/download/JobProof.apk">Download JobProof APK</a><a class="btn secondary" href="./">Verification home</a></div>
+</section>
+<section class="card"><strong>What is verified?</strong><p class="note">The QR contains a privacy-minimized snapshot signed by an ECDSA P-256 key stored in the Android device keystore. This page checks that digital signature and shows whether the client seal matched the job fingerprint when the QR was created. Customer name and phone number are not included. Device identity/account registration is a later server-backed trust layer.</p></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+function bytesFromB64url(v){v=v.replace(/-/g,'+').replace(/_/g,'/');while(v.length%4)v+='=';const b=atob(v),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}
+function textFromB64url(v){return new TextDecoder().decode(bytesFromB64url(v))}
+function setStatus(kind,title,summary,badge){$('result').className='result '+kind;$('result').textContent=title;$('summary').textContent=summary;$('badgeText').textContent=badge;$('dot').style.background=kind==='ok'?'#4ee0be':kind==='warn'?'#F4A340':'#ff7b7b'}
+(async()=>{try{
+ const q=new URLSearchParams(location.hash.replace(/^#/,''));const p=q.get('p'),s=q.get('s'),k=q.get('k');if(!p||!s||!k)throw new Error('No JobProof verification payload was found in this link.');
+ const payload=JSON.parse(textFromB64url(p));
+ const publicKey=await crypto.subtle.importKey('spki',bytesFromB64url(k),{name:'ECDSA',namedCurve:'P-256'},false,['verify']);
+ const signatureValid=await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},publicKey,bytesFromB64url(s),new TextEncoder().encode(p));
+ if(!signatureValid){setStatus('bad','Digital signature invalid','This QR data has been changed or is not a valid JobProof verification payload.','INVALID SIGNATURE');return}
+ let kind='ok',title='Digital signature valid',summary='The verification snapshot has a valid device-keystore signature.';
+ if(payload.state==='modified'){kind='warn';title='Valid signature — modified after approval';summary='The QR is authentic, but the job fingerprint no longer matched the client-approved seal when this QR was generated.'}
+ else if(payload.state==='unsealed'){kind='warn';title='Valid signature — no client seal';summary='The QR is authentic, but this job had not yet been approved with a client signature.'}
+ setStatus(kind,title,summary,'ECDSA P-256 VERIFIED');
+ $('grid').classList.remove('hidden');$('jobId').textContent=payload.jobId||'—';$('sealState').textContent=payload.state||'—';$('seal').textContent=payload.seal||'—';$('current').textContent=payload.current||'—';$('signer').textContent=payload.signer||'—';$('signedAt').textContent=payload.signedAt?new Date(Number(payload.signedAt)).toLocaleString():'—';$('photos').textContent=String(payload.photos??0);$('keyId').textContent=payload.keyId||'—';
+}catch(e){setStatus('bad','Verification failed',e.message||String(e),'INVALID OR MISSING DATA')}})();
+</script>
+</body>
+</html>
