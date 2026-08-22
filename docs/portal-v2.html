@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0B2740">
+<title>JobProof Secure Client Portal</title>
+<style>
+:root{--n:#0B2740;--n2:#123A55;--t:#0B8F7A;--g:#F4A340;--bg:#F4F8F7;--i:#17232D;--m:#647782;--bad:#B54747}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Tahoma,Arial,sans-serif;background:radial-gradient(circle at top right,#ddf5ee,transparent 30%),linear-gradient(180deg,#eef7f4,#fff 45%);color:var(--i);min-height:100vh}.w{max-width:940px;margin:auto;padding:24px 16px 55px}.hero{background:linear-gradient(135deg,var(--n),var(--n2),#0b695f);color:#fff;border-radius:28px;padding:25px;box-shadow:0 18px 55px #0b274025}.brand{font-weight:900;font-size:29px}.sub{opacity:.8;margin-top:6px}.trust{display:inline-flex;gap:8px;align-items:center;margin-top:15px;padding:8px 12px;border-radius:999px;background:#ffffff17;border:1px solid #ffffff2b;font-weight:800}.card{background:#fff;border:1px solid #dfe9e6;border-radius:23px;padding:19px;margin-top:16px;box-shadow:0 12px 34px #0b27400d}.title{font-size:18px;font-weight:900;color:var(--n);margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.item{background:var(--bg);border-radius:15px;padding:12px}.label{font-size:12px;color:var(--m);font-weight:700}.value{font-weight:800;margin-top:4px;word-break:break-word;white-space:pre-wrap}.money{font-size:19px;color:var(--t)}.btn{border:0;text-decoration:none;border-radius:13px;padding:11px 14px;font-weight:850;cursor:pointer;font:inherit}.primary{background:var(--t);color:#fff}.navy{background:var(--n);color:#fff}.secondary{background:#edf6f3;color:var(--n)}.danger{background:#fff0f0;color:var(--bad)}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}.good{color:var(--t)}.bad{color:var(--bad)}.warn{color:#a56b12}.hidden{display:none}.note{font-size:13px;line-height:1.6;color:var(--m)}textarea{width:100%;min-height:100px;border:1px solid #cedbd7;border-radius:14px;padding:12px;font:inherit;resize:vertical}.appointment{padding:12px;border-radius:15px;background:var(--bg);margin:8px 0}.status{font-weight:800;color:var(--t)}@media(max-width:640px){.grid{grid-template-columns:1fr}.brand{font-size:23px}.hero{border-radius:22px;padding:20px}.actions .btn{flex:1 1 46%}}
+</style>
+</head>
+<body><main class="w">
+<section class="hero">
+<div class="brand">JobProof • <span dir="rtl">إثبات العمل</span></div>
+<div class="sub">Secure Client Portal • بوابة العميل الآمنة</div>
+<div class="trust"><span id="dot">●</span><span id="trust">Checking secure access…</span></div>
+</section>
+
+<section class="card"><div class="title" id="statusTitle">Opening portal…</div><div class="note" id="statusText">This secure link is being validated against the JobProof server registry.</div></section>
+
+<div id="content" class="hidden">
+<section class="card">
+<div class="title">Business • المنشأة</div>
+<div class="grid">
+<div class="item"><div class="label">Business • المنشأة</div><div class="value" id="business"></div></div>
+<div class="item"><div class="label">Country • الدولة</div><div class="value" id="country"></div></div>
+<div class="item"><div class="label">Registration • السجل/الترخيص</div><div class="value" id="registration"></div></div>
+<div class="item"><div class="label">Link expires • انتهاء الرابط</div><div class="value" id="expires"></div></div>
+</div>
+</section>
+
+<section class="card" id="customerCard">
+<div class="title">Customer • العميل</div>
+<div class="grid">
+<div class="item"><div class="label">Name • الاسم</div><div class="value" id="customerName"></div></div>
+<div class="item"><div class="label">Phone • الهاتف</div><div class="value" id="customerPhone"></div></div>
+<div class="item"><div class="label">Email • البريد</div><div class="value" id="customerEmail"></div></div>
+<div class="item"><div class="label">Address • العنوان</div><div class="value" id="customerAddress"></div></div>
+</div>
+</section>
+
+<section class="card hidden" id="documentCard">
+<div class="title">Document • المستند</div>
+<div class="grid">
+<div class="item"><div class="label">Number • الرقم</div><div class="value" id="docNumber"></div></div>
+<div class="item"><div class="label">Type • النوع</div><div class="value" id="docKind"></div></div>
+<div class="item"><div class="label">Status • الحالة</div><div class="value status" id="docStatus"></div></div>
+<div class="item"><div class="label">Total • الإجمالي</div><div class="value money" id="docTotal"></div></div>
+<div class="item"><div class="label">Paid • المدفوع</div><div class="value" id="docPaid"></div></div>
+<div class="item"><div class="label">Outstanding • المتبقي</div><div class="value" id="docDue"></div></div>
+</div>
+<div class="actions hidden" id="quoteActions">
+<button class="btn primary" id="approveBtn">Approve quote • موافقة</button>
+<button class="btn danger" id="rejectBtn">Reject • رفض</button>
+</div>
+</section>
+
+<section class="card hidden" id="jobCard">
+<div class="title">Job • العمل</div>
+<div class="grid">
+<div class="item"><div class="label">Job ID • رقم العمل</div><div class="value" id="jobId"></div></div>
+<div class="item"><div class="label">Proof fingerprint • بصمة الإثبات</div><div class="value" id="proof"></div></div>
+<div class="item"><div class="label">Signed by • الموقّع</div><div class="value" id="signer"></div></div>
+<div class="item"><div class="label">Signed at • وقت التوقيع</div><div class="value" id="signedAt"></div></div>
+</div>
+</section>
+
+<section class="card" id="appointmentsCard">
+<div class="title">Appointments • المواعيد</div>
+<div id="appointments"></div>
+</section>
+
+<section class="card">
+<div class="title">Request or message • طلب أو رسالة</div>
+<textarea id="message" maxlength="1500" placeholder="Write your request here… / اكتب طلبك هنا"></textarea>
+<div class="actions">
+<button class="btn navy" id="workRequestBtn">Request new work • طلب عمل جديد</button>
+<button class="btn secondary" id="appointmentBtn">Request appointment change • طلب تغيير موعد</button>
+<button class="btn secondary hidden" id="quoteChangeBtn">Request quote change • تعديل عرض السعر</button>
+</div>
+<div class="note" id="actionResult"></div>
+</section>
+
+<section class="card">
+<div class="title">Security • الأمان</div>
+<p class="note">This portal uses a high-entropy, time-limited server access token. The token is kept in the URL fragment after # and is sent to JobProof only in the POST request needed to load or submit portal actions. Share the full link only with the intended customer.</p>
+</section>
+</div>
+</main>
+
+<script>
+const EDGE="https://flpcqnzlousongduztdq.supabase.co/functions/v1/jobproof-public";
+const $=id=>document.getElementById(id);
+const val=(id,v)=>$(id).textContent=(v===undefined||v===null||v==="")?"—":String(v);
+const money=(v,c)=>`${Number(v||0).toLocaleString(undefined,{maximumFractionDigits:2})} ${c||""}`.trim();
+const token=new URLSearchParams(location.hash.replace(/^#/,"")).get("t")||"";
+let portal=null;
+function fail(msg){$("statusTitle").textContent="Portal unavailable";$("statusTitle").className="title bad";$("statusText").textContent=msg;$("trust").textContent="ACCESS DENIED";$("dot").style.color="#ff7b7b"}
+async function call(action,extra={}){const r=await fetch(EDGE,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action,token,...extra})});const d=await r.json().catch(()=>({error:"Invalid server response"}));if(!r.ok)throw new Error(d.error||`HTTP ${r.status}`);return d}
+function has(scope){return Array.isArray(portal?.scopes)&&portal.scopes.includes(scope)}
+function render(d){
+ portal=d;
+ $("statusTitle").textContent="Secure JobProof portal";
+ $("statusTitle").className="title good";
+ $("statusText").textContent="Server access token validated successfully.";
+ $("trust").textContent="SERVER ACCESS VERIFIED";
+ $("dot").style.color="#4ee0be";
+ $("content").classList.remove("hidden");
+ val("business",d.issuer?.name);val("country",d.issuer?.country);val("registration",d.issuer?.registration_id);val("expires",d.expires_at?new Date(d.expires_at).toLocaleString():"—");
+ if(d.customer){val("customerName",d.customer.name);val("customerPhone",d.customer.phone);val("customerEmail",d.customer.email);val("customerAddress",d.customer.address)}else{$("customerCard").classList.add("hidden")}
+ if(d.document){
+   $("documentCard").classList.remove("hidden");
+   const x=d.document,c=x.currency||"";
+   val("docNumber",x.document_number);val("docKind",x.kind);val("docStatus",x.status);val("docTotal",money(x.total,c));val("docPaid",money(x.paid,c));val("docDue",money(Math.max(0,Number(x.total||0)-Number(x.paid||0)),c));
+   if(x.kind==="quote"&&has("quote_approve"))$("quoteActions").classList.remove("hidden");
+   if(x.kind==="quote"&&has("quote_change"))$("quoteChangeBtn").classList.remove("hidden");
+ }
+ if(d.job){$("jobCard").classList.remove("hidden");val("jobId",d.job.local_job_id);val("proof",d.job.proof_fingerprint);val("signer",d.job.signer_name);val("signedAt",d.job.signed_at?new Date(Number(d.job.signed_at)).toLocaleString():"—")}
+ const box=$("appointments");box.innerHTML="";
+ const rows=Array.isArray(d.appointments)?d.appointments:[];
+ if(!rows.length){box.innerHTML='<div class="note">No appointments found • لا توجد مواعيد</div>'}
+ rows.forEach(a=>{const el=document.createElement("div");el.className="appointment";el.innerHTML=`<strong>${escapeHtml(a.title||"Appointment")}</strong><div>${new Date(Number(a.scheduled_start)).toLocaleString()} — ${new Date(Number(a.scheduled_end)).toLocaleTimeString()}</div><div class="status">${escapeHtml(a.status||"")}</div><div class="note">${escapeHtml(a.address||"")}</div>`;box.appendChild(el)})
+ $("workRequestBtn").disabled=!has("work_request");$("appointmentBtn").disabled=!has("appointment_change");
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+async function portalAction(action,extra){$("actionResult").textContent="Sending…";try{const d=await call(action,extra);$("actionResult").textContent="Saved successfully • تم الحفظ بنجاح";return d}catch(e){$("actionResult").textContent=e.message;throw e}}
+$("approveBtn").onclick=async()=>{try{await portalAction("quote_action",{decision:"approve"});portal.document.status="approved";val("docStatus","approved");$("quoteActions").classList.add("hidden")}catch{}};
+$("rejectBtn").onclick=async()=>{try{await portalAction("quote_action",{decision:"reject"});portal.document.status="rejected";val("docStatus","rejected");$("quoteActions").classList.add("hidden")}catch{}};
+$("quoteChangeBtn").onclick=async()=>{const message=$("message").value.trim();if(!message)return $("actionResult").textContent="Write a message first • اكتب الرسالة أولًا";try{await portalAction("quote_action",{decision:"change",message});$("message").value=""}catch{}};
+$("workRequestBtn").onclick=async()=>{const message=$("message").value.trim();if(!message)return $("actionResult").textContent="Write a request first • اكتب الطلب أولًا";try{await portalAction("request_work",{message});$("message").value=""}catch{}};
+$("appointmentBtn").onclick=async()=>{const message=$("message").value.trim();if(!message)return $("actionResult").textContent="Write the requested change first • اكتب التغيير المطلوب أولًا";try{await portalAction("appointment_change",{message});$("message").value=""}catch{}};
+(async()=>{if(!/^[a-f0-9]{64}$/i.test(token))return fail("Invalid or missing portal token.");try{render(await call("portal"))}catch(e){fail(e.message)}})();
+</script>
+</body></html>
