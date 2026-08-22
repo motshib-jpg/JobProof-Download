@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0B2740">
+<title>JobProof Client Portal | بوابة العميل</title>
+<style>
+:root{--n:#0B2740;--n2:#123A55;--t:#0B8F7A;--g:#F4A340;--bg:#F4F8F7;--i:#17232D;--m:#647782;--bad:#B54747}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Tahoma,Arial,sans-serif;background:radial-gradient(circle at top right,#dff5ef 0,transparent 32%),linear-gradient(180deg,#eef7f4,#fff 44%);color:var(--i);min-height:100vh}.w{max-width:940px;margin:auto;padding:25px 17px 55px}.hero{background:linear-gradient(135deg,var(--n),var(--n2),#0b695f);color:#fff;border-radius:28px;padding:25px;box-shadow:0 18px 55px #0b274026}.brand{font-weight:900;font-size:29px}.sub{opacity:.8;margin-top:6px}.trust{display:inline-flex;gap:8px;align-items:center;margin-top:16px;padding:9px 13px;border-radius:999px;background:#ffffff16;border:1px solid #ffffff2d;font-weight:800}.card{background:#fff;border:1px solid #dfe9e6;border-radius:23px;padding:20px;margin-top:17px;box-shadow:0 12px 34px #0b27400c}.title{font-size:18px;font-weight:900;color:var(--n);margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.item{background:var(--bg);border-radius:15px;padding:12px}.label{font-size:12px;color:var(--m);font-weight:700}.value{font-weight:800;margin-top:4px;word-break:break-word;white-space:pre-wrap}.money{font-size:19px;color:var(--t)}.proof{font-family:Consolas,monospace;letter-spacing:.35px}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}.btn{display:inline-block;text-decoration:none;border-radius:13px;padding:10px 14px;font-weight:850}.primary{background:var(--t);color:white}.secondary{background:#edf6f3;color:var(--n)}.good{color:var(--t)}.bad{color:var(--bad)}.hidden{display:none}.note{font-size:13px;line-height:1.6;color:var(--m)}@media(max-width:640px){.grid{grid-template-columns:1fr}.brand{font-size:23px}.hero{border-radius:22px;padding:20px}}
+</style></head>
+<body><main class="w">
+<section class="hero"><div class="brand">JobProof • <span dir="rtl">إثبات العمل</span></div><div class="sub">Client Portal • بوابة العميل</div><div class="trust"><span id="dot">●</span><span id="trust">Checking signed portal…</span></div></section>
+<section class="card"><div class="title" id="status">Verifying portal…</div><div class="note" id="statusText">The signed snapshot is checked locally in this browser.</div></section>
+<div id="content" class="hidden">
+<section class="card"><div class="title">Business • المنشأة</div><div class="grid">
+<div class="item"><div class="label">Business name • اسم المنشأة</div><div class="value" id="bn"></div></div>
+<div class="item"><div class="label">Identity ID • معرف الهوية</div><div class="value proof" id="bid"></div></div>
+<div class="item"><div class="label">Responsible person • المسؤول</div><div class="value" id="worker"></div></div>
+<div class="item"><div class="label">Registration / License • السجل / الترخيص</div><div class="value" id="reg"></div></div>
+<div class="item"><div class="label">Phone • الهاتف</div><div class="value" id="bphone"></div></div>
+<div class="item"><div class="label">Email • البريد</div><div class="value" id="email"></div></div>
+<div class="item"><div class="label">Website • الموقع</div><div class="value" id="website"></div></div>
+<div class="item"><div class="label">Country • الدولة</div><div class="value" id="country"></div></div>
+</div></section>
+<section class="card"><div class="title">Job • العمل</div><div class="grid">
+<div class="item"><div class="label">Job ID • رقم العمل</div><div class="value" id="job"></div></div>
+<div class="item"><div class="label">Customer • العميل</div><div class="value" id="customer"></div></div>
+<div class="item"><div class="label">Type • النوع</div><div class="value" id="type"></div></div>
+<div class="item"><div class="label">Work status • حالة العمل</div><div class="value" id="ws"></div></div>
+<div class="item"><div class="label">Requested • المطلوب</div><div class="value" id="req"></div></div>
+<div class="item"><div class="label">Completed • المنجز</div><div class="value" id="done"></div></div>
+<div class="item"><div class="label">Evidence photos • صور الإثبات</div><div class="value" id="photos"></div></div>
+<div class="item"><div class="label">Client approval • اعتماد العميل</div><div class="value" id="ps"></div></div>
+</div></section>
+<section class="card"><div class="title">Financial summary • الملخص المالي</div><div class="grid">
+<div class="item"><div class="label">Total • الإجمالي</div><div class="value money" id="total"></div></div>
+<div class="item"><div class="label">Paid • المدفوع</div><div class="value money" id="paid"></div></div>
+<div class="item"><div class="label">Remaining • المتبقي</div><div class="value money" id="rem"></div></div>
+<div class="item"><div class="label">Payment status • حالة الدفع</div><div class="value" id="paystate"></div></div>
+</div></section>
+<section class="card"><div class="title">Digital proof • الإثبات الرقمي</div><div class="grid">
+<div class="item"><div class="label">Proof fingerprint • البصمة</div><div class="value proof" id="proof"></div></div>
+<div class="item"><div class="label">Device key ID • معرف مفتاح الجهاز</div><div class="value proof" id="kid"></div></div>
+<div class="item"><div class="label">Signed by • الموقّع</div><div class="value" id="signer"></div></div>
+<div class="item"><div class="label">Signed at • وقت التوقيع</div><div class="value" id="signed"></div></div>
+</div><div class="actions"><a class="btn primary" href="./verify.html">Verification center</a><a id="apk" class="btn secondary">Download JobProof APK</a></div></section>
+<section class="card"><div class="title">Privacy & trust • الخصوصية والثقة</div><p class="note">The payload is carried in the URL fragment after # and verified in this browser using ECDSA P-256. Browsers do not send the fragment in the HTTP request to GitHub Pages. Anyone who receives the complete link can still view the portal, so share it only with the intended client. The business identity is device-signed; external registry verification requires a server-backed trust layer.</p></section>
+</div></main>
+<script>
+const $=x=>document.getElementById(x);
+function b(v){v=v.replace(/-/g,'+').replace(/_/g,'/');while(v.length%4)v+='=';const s=atob(v),a=new Uint8Array(s.length);for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return a}
+function t(v){return new TextDecoder().decode(b(v))}
+function put(id,v){$(id).textContent=(v===undefined||v===null||v==='')?'—':String(v)}
+function fail(m){$('status').textContent='Portal verification failed';$('status').className='title bad';$('statusText').textContent=m;$('trust').textContent='INVALID PORTAL';$('dot').style.color='#ff7b7b'}
+(async()=>{try{
+const q=new URLSearchParams(location.hash.replace(/^#/,'')),p=q.get('p'),s=q.get('s'),k=q.get('k');if(!p||!s||!k)throw new Error('No signed JobProof client portal was found.');
+const P=JSON.parse(t(p));if(P.kind!=='client_portal')throw new Error('This is not a client portal payload.');
+const key=await crypto.subtle.importKey('spki',b(k),{name:'ECDSA',namedCurve:'P-256'},false,['verify']);
+const ok=await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},key,b(s),new TextEncoder().encode(p));if(!ok)throw new Error('Digital signature is invalid or the portal data was changed.');
+$('status').textContent='Digitally signed client portal';$('status').className='title good';
+$('statusText').textContent=P.proofState==='verified'?'Signature valid and the client-approved fingerprint matches.':P.proofState==='modified'?'Signature valid, but this snapshot reports changes after client approval.':'Signature valid; this job has not yet been sealed by a client signature.';
+$('trust').textContent='ECDSA P-256 SIGNATURE VALID';$('dot').style.color='#4ee0be';$('content').classList.remove('hidden');
+const B=P.business||{};put('bn',B.name);put('bid',B.identityId);put('worker',B.worker);put('reg',B.registration);put('bphone',B.phone);put('email',B.email);put('website',B.website);put('country',B.country);
+put('job',P.jobId);put('customer',P.customer);put('type',P.jobType);put('ws',P.workStatus);put('req',P.requested);put('done',P.completed);put('photos',P.photos);put('ps',P.proofState);
+const c=P.currency||'';put('total',(P.total||'0')+' '+c);put('paid',(P.paid||'0')+' '+c);put('rem',(P.remaining||'0')+' '+c);put('paystate',P.paymentState);
+put('proof',P.proof);put('kid',P.keyId);put('signer',P.signer);put('signed',P.signedAt?new Date(Number(P.signedAt)).toLocaleString():'—');$('apk').href=P.appDownload||'#';
+}catch(e){fail(e.message||String(e))}})();
+</script></body></html>
