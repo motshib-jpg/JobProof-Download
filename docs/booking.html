@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0B2740">
+<title>JobProof Online Booking</title>
+<style>
+:root{--n:#0B2740;--n2:#123A55;--t:#0B8F7A;--g:#F4A340;--bg:#F4F8F7;--i:#17232D;--m:#647782;--bad:#B54747}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Tahoma,Arial,sans-serif;background:radial-gradient(circle at top right,#dcf4ed,transparent 30%),linear-gradient(180deg,#eff8f5,#fff 48%);color:var(--i);min-height:100vh}.w{max-width:760px;margin:auto;padding:24px 16px 55px}.hero{background:linear-gradient(135deg,var(--n),var(--n2),#0b695f);color:#fff;border-radius:28px;padding:25px;box-shadow:0 18px 55px #0b274025}.brand{font-size:28px;font-weight:900}.sub{opacity:.82;margin-top:7px}.badge{display:inline-flex;margin-top:15px;padding:8px 12px;border-radius:999px;background:#ffffff17;border:1px solid #ffffff2b;font-weight:850}.card{background:#fff;border:1px solid #dfe9e6;border-radius:23px;padding:19px;margin-top:16px;box-shadow:0 12px 34px #0b27400d}.title{font-size:18px;font-weight:900;color:var(--n);margin-bottom:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:flex;flex-direction:column;gap:6px}.full{grid-column:1/-1}label{font-size:12px;color:var(--m);font-weight:800}input,select,textarea{width:100%;border:1px solid #ccd9d5;border-radius:13px;padding:12px;font:inherit;color:var(--i);background:#fff}textarea{min-height:105px;resize:vertical}.btn{width:100%;border:0;border-radius:14px;padding:13px 15px;background:var(--t);color:#fff;font:inherit;font-weight:900;cursor:pointer}.btn:disabled{opacity:.5;cursor:not-allowed}.note{font-size:13px;line-height:1.6;color:var(--m)}.success{color:var(--t);font-weight:850}.bad{color:var(--bad);font-weight:800}.hidden{display:none}.service-note{font-size:12px;color:var(--m);margin-top:5px}@media(max-width:620px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.brand{font-size:23px}.hero{border-radius:22px}}
+</style>
+</head>
+<body><main class="w">
+<section class="hero">
+<div class="brand">JobProof • Online Booking</div>
+<div class="sub">Book field service without installing an app • <span dir="rtl">احجز الخدمة بدون تثبيت التطبيق</span></div>
+<div class="badge" id="secureBadge">Validating secure booking link…</div>
+</section>
+<section class="card" id="statusCard"><div class="title" id="statusTitle">Opening booking…</div><div class="note" id="statusText">The secure booking token is being checked with JobProof.</div></section>
+<div id="content" class="hidden">
+<section class="card"><div class="title" id="businessName">JobProof Business</div><div class="note" id="instructions"></div></section>
+<section class="card">
+<div class="title">Booking details • <span dir="rtl">بيانات الحجز</span></div>
+<div class="grid">
+<div class="field"><label>Name • الاسم *</label><input id="name" maxlength="120" autocomplete="name"></div>
+<div class="field"><label>Phone • الهاتف</label><input id="phone" maxlength="80" autocomplete="tel"></div>
+<div class="field"><label>Email • البريد</label><input id="email" maxlength="180" type="email" autocomplete="email"></div>
+<div class="field"><label>Service • الخدمة</label><select id="service"><option value="">Choose service / اختر الخدمة</option></select><div class="service-note" id="serviceNote"></div></div>
+<div class="field full"><label>Address • العنوان</label><input id="address" maxlength="300" autocomplete="street-address"></div>
+<div class="field"><label>Preferred date & time • الوقت المفضل *</label><input id="preferred" type="datetime-local"></div>
+<div class="field"><label>Approx duration • المدة</label><select id="duration"><option value="60">1 hour / ساعة</option><option value="90">90 min / 90 دقيقة</option><option value="120">2 hours / ساعتان</option><option value="180">3 hours / 3 ساعات</option></select></div>
+<div class="field full"><label>Notes • ملاحظات</label><textarea id="notes" maxlength="1500" placeholder="Describe what you need… / اشرح ما تحتاجه…"></textarea></div>
+</div>
+<button class="btn" id="submit">Submit booking request • إرسال طلب الحجز</button>
+<div class="note" id="result" style="margin-top:10px"></div>
+</section>
+<section class="card"><div class="title">Privacy • الخصوصية</div><p class="note">This form sends only the information you enter to the selected JobProof business. The booking token is high-entropy and can be rotated by the business. A booking request is not confirmed until the business contacts you or schedules it.</p></section>
+</div>
+</main>
+<script>
+const EDGE="https://flpcqnzlousongduztdq.supabase.co/functions/v1/jobproof-public";
+const $=id=>document.getElementById(id);const token=new URLSearchParams(location.hash.replace(/^#/,"")).get("t")||"";let formData=null;
+const fail=m=>{$("statusTitle").textContent="Booking link unavailable";$('statusTitle').className='title bad';$("statusText").textContent=m;$("secureBadge").textContent="BOOKING LINK INVALID"};
+async function call(action,extra={}){const r=await fetch(EDGE,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action,token,...extra})});const d=await r.json().catch(()=>({error:"Invalid server response"}));if(!r.ok)throw new Error(d.error||`HTTP ${r.status}`);return d}
+function price(s){const p=Number(s.default_price||0);return p>0?`${p.toLocaleString(undefined,{maximumFractionDigits:2})} ${s.currency||''}`:''}
+(async()=>{if(!/^[a-f0-9]{64}$/i.test(token))return fail("Invalid or missing booking token.");try{formData=await call("booking_form");$("content").classList.remove("hidden");$("secureBadge").textContent="SECURE BOOKING LINK VERIFIED";$("statusTitle").textContent="Booking is available";$("statusTitle").className="title success";$("statusText").textContent=`You may request a time within the next ${formData.booking?.days_ahead||30} days.`;$("businessName").textContent=formData.issuer?.name||formData.booking?.title||"JobProof Business";$("instructions").textContent=formData.booking?.instructions||"Choose a service and preferred time; the business will confirm availability.";const select=$("service");(formData.services||[]).forEach(s=>{const o=document.createElement("option");o.value=s.local_id;o.textContent=`${s.name}${price(s)?' — '+price(s):''}`;o.dataset.description=s.description||'';select.appendChild(o)});select.onchange=()=>{const o=select.selectedOptions[0];$("serviceNote").textContent=o?.dataset?.description||''};const now=new Date(Date.now()+60*60*1000);now.setMinutes(Math.ceil(now.getMinutes()/15)*15,0,0);const offset=now.getTimezoneOffset()*60000;$("preferred").min=new Date(Date.now()-offset).toISOString().slice(0,16);$("preferred").max=new Date(Date.now()+(formData.booking?.days_ahead||30)*86400000-offset).toISOString().slice(0,16);$("preferred").value=new Date(now.getTime()-offset).toISOString().slice(0,16)}catch(e){fail(e.message)}})();
+$("submit").onclick=async()=>{const name=$("name").value.trim(),phone=$("phone").value.trim(),email=$("email").value.trim(),preferred=$("preferred").value;if(name.length<2)return $("result").textContent="Name is required • الاسم مطلوب";if(!phone&&!email)return $("result").textContent="Phone or email is required • الهاتف أو البريد مطلوب";if(!preferred)return $("result").textContent="Preferred time is required • الوقت المفضل مطلوب";const start=new Date(preferred).getTime(),duration=Number($("duration").value||60)*60000;$("submit").disabled=true;$("result").textContent="Sending…";try{const d=await call("booking_submit",{customer_name:name,customer_phone:phone,customer_email:email,address:$("address").value.trim(),service_local_id:$("service").value,preferred_start:start,preferred_end:start+duration,notes:$("notes").value.trim()});$("result").className="success";$("result").textContent=`Booking request received. Reference: ${d.booking_request?.id||''} • تم استلام طلب الحجز`;$("submit").textContent="Request sent • تم الإرسال"}catch(e){$("submit").disabled=false;$("result").className="bad";$("result").textContent=e.message}}
+</script></body></html>
